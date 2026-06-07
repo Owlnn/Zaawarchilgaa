@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Өдөр тутмын Аюулгүй Ажиллагааны Зааварчилгаа</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mongolian&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e14;
+    --surface: #111820;
+    --panel: #161e28;
+    --border: #1e2d3d;
+    --accent: #f0a500;
+    --accent2: #e05c00;
+    --danger: #e03c3c;
+    --safe: #2ecc71;
+    --text: #d6e0f0;
+    --muted: #5a7a99;
+    --highlight: #1a2a3a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  /* Animated background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(240,165,0,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(240,165,0,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 32px 20px 60px;
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 36px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .header-icon {
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 20px rgba(240,165,0,0.25);
+  }
+
+  .header-text h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.3px;
+    line-height: 1.2;
+  }
+
+  .header-text p {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .date-badge {
+    margin-left: auto;
+    flex-shrink: 0;
+    background: var(--highlight);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 16px;
+    text-align: right;
+  }
+
+  .date-badge .date-day {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .date-badge .date-label {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* Step indicator */
+  .step-indicator {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 28px;
+    align-items: center;
+  }
+
+  .step-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: all 0.3s;
+  }
+
+  .step-dot.active {
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  .step-dot.done {
+    background: var(--safe);
+  }
+
+  .step-label {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    margin-left: 8px;
+  }
+
+  /* Safety cards */
+  .section-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .safety-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  @media (max-width: 600px) {
+    .safety-grid { grid-template-columns: 1fr; }
+  }
+
+  .safety-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    cursor: pointer;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  .safety-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--muted);
+    transition: background 0.25s;
+  }
+
+  .safety-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.3);
+  }
+
+  .safety-card.checked {
+    border-color: var(--safe);
+    background: rgba(46,204,113,0.06);
+  }
+
+  .safety-card.checked::before {
+    background: var(--safe);
+  }
+
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .card-emoji { font-size: 22px; line-height: 1; flex-shrink: 0; }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #e0eaff;
+    line-height: 1.3;
+  }
+
+  .card-check {
+    margin-left: auto;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-size: 12px;
+  }
+
+  .safety-card.checked .card-check {
+    background: var(--safe);
+    border-color: var(--safe);
+    color: #000;
+  }
+
+  .card-body {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+    padding-left: 34px;
+  }
+
+  /* Progress bar */
+  .progress-section {
+    margin-bottom: 28px;
+  }
+
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .progress-label {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .progress-count {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .progress-bar {
+    height: 6px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--safe));
+    border-radius: 4px;
+    transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* Signature section */
+  .signature-section {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+  }
+
+  .sig-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .sig-header h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #e0eaff;
+  }
+
+  .sig-header p {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .lock-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(240,165,0,0.1);
+    border: 1px solid rgba(240,165,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  /* Name input */
+  .field-group {
+    margin-bottom: 16px;
+  }
+
+  .field-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .field-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 11px 14px;
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .field-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(240,165,0,0.1);
+  }
+
+  /* Canvas */
+  .canvas-wrapper {
+    position: relative;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    background: #0d1520;
+    margin-bottom: 14px;
+  }
+
+  .canvas-wrapper canvas {
+    display: block;
+    width: 100%;
+    cursor: crosshair;
+    touch-action: none;
+  }
+
+  .canvas-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    flex-direction: column;
+    gap: 6px;
+    transition: opacity 0.3s;
+  }
+
+  .canvas-placeholder .ph-icon { font-size: 28px; opacity: 0.2; }
+  .canvas-placeholder .ph-text { font-size: 12px; color: var(--muted); opacity: 0.5; }
+
+  .canvas-controls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .ctrl-btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--muted);
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'IBM Plex Mono', monospace;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .ctrl-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .pen-size-group {
+    display: flex;
+    gap: 4px;
+    margin-left: auto;
+    align-items: center;
+  }
+
+  .pen-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    color: var(--muted);
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+  }
+
+  .pen-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(240,165,0,0.1); }
+
+  /* Submit button */
+  .submit-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #000;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .submit-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .submit-btn:not(:disabled):hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 30px rgba(240,165,0,0.35);
+  }
+
+  /* Locked overlay */
+  .locked-overlay {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(224,60,60,0.08);
+    border: 1px solid rgba(224,60,60,0.25);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    font-size: 12px;
+    color: #e06060;
+  }
+
+  /* Success screen */
+  .success-screen {
+    display: none;
+    text-align: center;
+    padding: 40px 20px;
+    animation: fadeInUp 0.5s ease;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .success-screen.visible { display: block; }
+
+  .success-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--safe), #27ae60);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 38px;
+    margin: 0 auto 24px;
+    box-shadow: 0 0 40px rgba(46,204,113,0.3);
+  }
+
+  .success-screen h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 10px;
+  }
+
+  .success-screen p {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+
+  .receipt-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: left;
+    margin-bottom: 24px;
+  }
+
+  .receipt-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+
+  .receipt-row:last-child { border-bottom: none; }
+  .receipt-row .rkey { color: var(--muted); }
+  .receipt-row .rval { color: var(--text); font-weight: 500; }
+
+  .sig-preview {
+    margin-top: 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: #0d1520;
+  }
+
+  .sig-preview img {
+    width: 100%;
+    display: block;
+  }
+
+  .new-session-btn {
+    padding: 12px 32px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 14px;
+    cursor: pointer;
+    font-family: 'IBM Plex Sans', sans-serif;
+    transition: all 0.2s;
+  }
+
+  .new-session-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .main-view { animation: fadeInUp 0.3s ease; }
+
+  /* Warning danger card */
+  .safety-card[data-level="danger"]::before { background: var(--danger); }
+  .safety-card[data-level="danger"]:hover { border-color: var(--danger); }
+  .safety-card[data-level="danger"].checked { border-color: var(--safe); background: rgba(46,204,113,0.06); }
+  .safety-card[data-level="danger"].checked::before { background: var(--safe); }
+
+  .tag {
+    display: inline-block;
+    font-size: 9px;
+    font-family: 'IBM Plex Mono', monospace;
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  .tag-danger { background: rgba(224,60,60,0.15); color: #e06060; border: 1px solid rgba(224,60,60,0.3); }
+  .tag-warn { background: rgba(240,165,0,0.12); color: var(--accent); border: 1px solid rgba(240,165,0,0.3); }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Main View -->
+  <div class="main-view" id="mainView">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-icon">⛑️</div>
+      <div class="header-text">
+        <h1>Өдөр тутмын Аюулгүй<br>Ажиллагааны Зааварчилгаа</h1>
+        <p>DAILY SAFETY BRIEFING · v2.4</p>
+      </div>
+      <div class="date-badge">
+        <div class="date-day" id="dateDay">—</div>
+        <div class="date-label" id="dateLabel">loading...</div>
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-section">
+      <div class="progress-header">
+        <span class="progress-label">Гүйцэтгэлийн явц</span>
+        <span class="progress-count" id="progressCount">0 / 12</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- Section 1: PPE -->
+    <div class="section-title">🦺 Хувийн хамгааллын хэрэгсэл</div>
+    <div class="safety-grid" id="grid1">
+
+      <div class="safety-card" data-level="danger" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-emoji">🪖</span>
+          <div>
+            <div class="card-title">Хамгаалах малгай<span class="tag tag-danger">заавал</span></div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">Хамгаалах малгайг заавал өмсөж, тохируулах хэсгийг шалга. Хагарсан бол шинэчил.</div>
+      </div>
+
+      <div class="safety-card" data-level="danger" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-emoji">🥽</span>
+          <div>
+            <div class="card-title">Нүдний хамгаалалт<span class="tag tag-danger">заавал</span></div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">Нүдний шил эсвэл хамгаалах маскыг ажлын хэсэгт заавал зүүнэ. Шил цэвэр байгааг шалга.</div>
+      </div>
+
+      <div class="safety-card" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-emoji">🧤</span>
+          <div>
+            <div class="card-title">Гар хамгааллын бээлий</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">Ажлын шинж чанарт тохирсон бээлий өмс. Нүх, урагдалтай эсэхийг шалга.</div>
+      </div>
+
+      <div class="safety-card" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-emoji">🥾</span>
+          <div>
+            <div class="card-title">Хамгаалах гутал</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">Төмөр хамгаалалтай гутлыг өмс. Туузыг заавал уя. Намхан өсгийтэй байх.</div>
+      </div>
+
+    </div>
+
+    <!-- Section 2: Environment -->
+    <div class="section-title">🏗️ Ажлын орчны аюулгүй байдал</div>
+    <div class="safety-grid" id="grid2">
+
+      <div class="safety-card" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-emoji">🔦</span>
+          <div>
+            <div class="card-title">Гэрэлтүүлэг шалгах</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">Ажлын хэсэг хангалттай гэрэлтэй байгааг шалга. Гэрэл унтарсан бол мэдэгдэл.</div>
+      </div>
+
+      <div class="safety-card" data-level="danger" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-emoji">🚧</span>
+          <div>
+            <div class="card-title">Гарцыг чөлөөлөх<span class="tag tag-danger">заавал</span></div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">Яаралтай гарах замыг бүү хаа. Гарц, коридорт юм бүү тавь. Дор хаяж 1м зай байлга.</div>
+      </div>
+
+      <div class="safety-card" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-emoji">🧯</span>
+          <div>
+            <div class="card-title">Галын аюулгүй байдал</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">Галын унтраагуурын байршлыг мэд. Хугацаа нь дуусаагүй эсэхийг сард нэг шалга.</div>
+      </div>
+
+      <div class="safety-card" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-emoji">⚡</span>
+          <div>
+            <div class="card-title">Цахилгааны аюул<span class="tag tag-warn">анхаар</span></div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">Гэмтэлтэй кабель, залгуураас холдоорой. Ус, чийгтэй газарт цахилгаан хэрэгсэл бүү ашигла.</div>
+      </div>
+
+    </div>
+
+    <!-- Section 3: Behavior -->
+    <div class="section-title">🧠 Зан үйл ба харилцаа</div>
+    <div class="safety-grid" id="grid3">
+
+      <div class="safety-card" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-emoji">📵</span>
+          <div>
+            <div class="card-title">Утасны хэрэглээ</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">Тоног төхөөрөмж ажиллуулах үед гар утас хэрэглэхгүй. Ажлын хэсэгт анхаарлаа төвлөрүүл.</div>
+      </div>
+
+      <div class="safety-card" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-emoji">🤝</span>
+          <div>
+            <div class="card-title">Ажилтнуудтай харилцах</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">Аюулгүй ажиллагааны дохио зангааг ашигла. Тодорхой бус зааварт асуулт тавь.</div>
+      </div>
+
+      <div class="safety-card" data-level="danger" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-emoji">🚨</span>
+          <div>
+            <div class="card-title">Осол мэдэгдэх<span class="tag tag-danger">заавал</span></div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">Бага ч гэсэн осол гарсан бол шууд мэдэгдэл. Нуух нь хориглоно. Мэдэгдэх дугаар: <strong>7011</strong></div>
+      </div>
+
+      <div class="safety-card" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-emoji">💪</span>
+          <div>
+            <div class="card-title">Биеийн байдал шалга</div>
+          </div>
+          <div class="card-check">✓</div>
+        </div>
+        <div class="card-body">Эрүүл биш, ядарсан, нойр дутуу үед ажил хийхийг бүү зөвшөөр. Удирдлагаа мэдэгдэл.</div>
+      </div>
+
+    </div>
+
+    <!-- Signature Section -->
+    <div class="signature-section">
+      <div class="sig-header">
+        <div class="lock-icon" id="lockIcon">🔒</div>
+        <div>
+          <h3>Гарын үсэг зурах</h3>
+          <p id="sigSubtitle">Бүх зааврыг уншиж дуусгасны дараа гарын үсэг зурна уу</p>
+        </div>
+      </div>
+
+      <div class="locked-overlay" id="lockedMsg">
+        <span>⚠️</span>
+        <span>Гарын үсэг зурахын тулд эхлээд бүх <strong id="remainCount">12</strong> зааврыг баталгаажуулна уу</span>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Нэр, Овог</label>
+        <input type="text" class="field-input" id="nameInput" placeholder="Жишээ: Д. Мөнхбаяр" />
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Албан тушаал</label>
+        <input type="text" class="field-input" id="positionInput" placeholder="Жишээ: Ахлах инженер" />
+      </div>
+
+      <label class="field-label">Гарын үсэг</label>
+      <div class="canvas-controls">
+        <button class="ctrl-btn" onclick="clearCanvas()">🗑 Арилгах</button>
+        <div class="pen-size-group">
+          <span style="font-size:11px;color:var(--muted);margin-right:4px;">Зузаан:</span>
+          <button class="pen-btn active" onclick="setPen(2,this)">S</button>
+          <button class="pen-btn" onclick="setPen(4,this)">M</button>
+          <button class="pen-btn" onclick="setPen(7,this)">L</button>
+        </div>
+      </div>
+
+      <div class="canvas-wrapper">
+        <canvas id="sigCanvas" height="160"></canvas>
+        <div class="canvas-placeholder" id="canvasPh">
+          <div class="ph-icon">✍️</div>
+          <div class="ph-text">Гарын үсгээ энд зур</div>
+        </div>
+      </div>
+
+      <button class="submit-btn" id="submitBtn" disabled onclick="handleSubmit()">
+        <span>✓</span> Баталгаажуулах &amp; Хадгалах
+      </button>
+    </div>
+  </div>
+
+  <!-- Success Screen -->
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon">✅</div>
+    <h2>Амжилттай баталгаажлаа!</h2>
+    <p>Өнөөдрийн аюулгүй ажиллагааны зааварчилгааг уншиж, гарын үсэг зурлаа.</p>
+
+    <div class="receipt-card">
+      <div class="receipt-row">
+        <span class="rkey">Нэр, Овог</span>
+        <span class="rval" id="rName">—</span>
+      </div>
+      <div class="receipt-row">
+        <span class="rkey">Албан тушаал</span>
+        <span class="rval" id="rPosition">—</span>
+      </div>
+      <div class="receipt-row">
+        <span class="rkey">Огноо, цаг</span>
+        <span class="rval" id="rDate">—</span>
+      </div>
+      <div class="receipt-row">
+        <span class="rkey">Баталгаажсан зааврууд</span>
+        <span class="rval">12 / 12 ✓</span>
+      </div>
+      <div class="sig-preview">
+        <img id="sigImg" alt="Гарын үсэг" />
+      </div>
+    </div>
+
+    <button class="new-session-btn" onclick="resetApp()">↺ Шинэ сессия эхлэх</button>
+  </div>
+</div>
+
+<script>
+  const TOTAL = 12;
+  let checked = 0;
+  let penSize = 2;
+  let isDrawing = false;
+  let hasSignature = false;
+  let lastX = 0, lastY = 0;
+
+  // Date setup
+  const now = new Date();
+  const months = ['1-р сар','2-р сар','3-р сар','4-р сар','5-р сар','6-р сар','7-р сар','8-р сар','9-р сар','10-р сар','11-р сар','12-р сар'];
+  document.getElementById('dateDay').textContent = now.getDate();
+  document.getElementById('dateLabel').textContent = `${now.getFullYear()} · ${months[now.getMonth()]}`;
+
+  function toggleCard(card) {
+    const wasChecked = card.classList.contains('checked');
+    card.classList.toggle('checked');
+    checked += wasChecked ? -1 : 1;
+    updateProgress();
+  }
+
+  function updateProgress() {
+    document.getElementById('progressCount').textContent = `${checked} / ${TOTAL}`;
+    document.getElementById('progressFill').style.width = `${(checked/TOTAL)*100}%`;
+    document.getElementById('remainCount').textContent = TOTAL - checked;
+
+    const allDone = checked >= TOTAL;
+    document.getElementById('lockedMsg').style.display = allDone ? 'none' : 'flex';
+    document.getElementById('lockIcon').textContent = allDone ? '🔓' : '🔒';
+    document.getElementById('sigSubtitle').textContent = allDone
+      ? 'Та гарын үсэгт ороход бэлэн байна'
+      : 'Бүх зааврыг уншиж дуусгасны дараа гарын үсэг зурна уу';
+
+    // Enable/disable canvas
+    canvas.style.opacity = allDone ? '1' : '0.3';
+    canvas.style.pointerEvents = allDone ? 'auto' : 'none';
+
+    checkSubmit();
+  }
+
+  // Canvas setup
+  const canvas = document.getElementById('sigCanvas');
+  const ctx = canvas.getContext('2d');
+
+  function resizeCanvas() {
+    const w = canvas.parentElement.clientWidth;
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = w * dpr;
+    canvas.height = 160 * dpr;
+    canvas.style.width = w + 'px';
+    canvas.style.height = '160px';
+    ctx.scale(dpr, dpr);
+    ctx.strokeStyle = '#f0c060';
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    ctx.lineWidth = penSize;
+  }
+
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return { x: clientX - rect.left, y: clientY - rect.top };
+  }
+
+  canvas.addEventListener('mousedown', e => { isDrawing = true; const p = getPos(e); lastX = p.x; lastY = p.y; });
+  canvas.addEventListener('touchstart', e => { e.preventDefault(); isDrawing = true; const p = getPos(e); lastX = p.x; lastY = p.y; }, { passive: false });
+
+  function draw(e) {
+    if (!isDrawing) return;
+    e.preventDefault();
+    const p = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(p.x, p.y);
+    ctx.lineWidth = penSize;
+    ctx.strokeStyle = '#f0c060';
+    ctx.stroke();
+    lastX = p.x; lastY = p.y;
+    hasSignature = true;
+    document.getElementById('canvasPh').style.opacity = '0';
+    checkSubmit();
+  }
+
+  canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('touchmove', draw, { passive: false });
+
+  const stopDraw = () => { isDrawing = false; };
+  canvas.addEventListener('mouseup', stopDraw);
+  canvas.addEventListener('touchend', stopDraw);
+  canvas.addEventListener('mouseleave', stopDraw);
+
+  function clearCanvas() {
+    ctx.clearRect(0, 0, canvas.width / (window.devicePixelRatio||1), canvas.height / (window.devicePixelRatio||1));
+    hasSignature = false;
+    document.getElementById('canvasPh').style.opacity = '1';
+    checkSubmit();
+  }
+
+  function setPen(size, btn) {
+    penSize = size;
+    document.querySelectorAll('.pen-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  function checkSubmit() {
+    const name = document.getElementById('nameInput').value.trim();
+    const ready = checked >= TOTAL && hasSignature && name.length > 0;
+    document.getElementById('submitBtn').disabled = !ready;
+  }
+
+  document.getElementById('nameInput').addEventListener('input', checkSubmit);
+  document.getElementById('positionInput').addEventListener('input', checkSubmit);
+
+  function handleSubmit() {
+    const name = document.getElementById('nameInput').value.trim();
+    const pos = document.getElementById('positionInput').value.trim();
+    const now2 = new Date();
+    const timeStr = now2.toLocaleString('mn-MN', { year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit' });
+
+    document.getElementById('rName').textContent = name;
+    document.getElementById('rPosition').textContent = pos || '—';
+    document.getElementById('rDate').textContent = timeStr;
+    document.getElementById('sigImg').src = canvas.toDataURL('image/png');
+
+    document.getElementById('mainView').style.display = 'none';
+    document.getElementById('successScreen').classList.add('visible');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function resetApp() {
+    checked = 0;
+    hasSignature = false;
+    document.querySelectorAll('.safety-card').forEach(c => c.classList.remove('checked'));
+    clearCanvas();
+    document.getElementById('nameInput').value = '';
+    document.getElementById('positionInput').value = '';
+    updateProgress();
+    document.getElementById('mainView').style.display = 'block';
+    document.getElementById('successScreen').classList.remove('visible');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // init
+  updateProgress();
+</script>
+</body>
+</html>
